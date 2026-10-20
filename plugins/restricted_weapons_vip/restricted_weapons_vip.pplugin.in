@@ -1,0 +1,32 @@
+{
+	"$schema": "https://raw.githubusercontent.com/untrustedmodders/plugify/refs/heads/main/schemas/plugin.schema.json",
+	"version": "${RESTRICTED_WEAPONS_VIP_VERSION}",
+	"name": "restricted_weapons_vip",
+	"description": "VIP module of the RestrictedWeapons core (port of the Pisex module '[Restricted Weapons] VIP'): registers the vip feature 'restricted_weapons' (VIP_BOOL, TOGGLABLE) whose per-group value is a semicolon-separated weapon list (weapon_awp;weapon_ssg08;...) and hooks the core's OnWeaponRestricted, unblocking a restricted weapon when its classname occurs in the player's list. Requires the RestrictedWeapons and vip cores.",
+	"author": "Pisex, ported to Plugify",
+	"website": "https://github.com/untrustedmodders/plugify",
+	"license": "GPL-3.0",
+	"entry": "bin/restricted_weapons_vip",
+	"platforms": [],
+	"language": "cpp",
+	"dependencies": [
+		{
+			"name": "s2sdk",
+			"constraints": ">=2.18.2"
+		},
+		{
+			"name": "vip",
+			"constraints": ">=1.0.0"
+		},
+		{
+			"name": "RestrictedWeapons",
+			"constraints": ">=1.0.0"
+		},
+		{
+			"name": "hudmenu",
+			"constraints": ">=1.0.0",
+			"optional": true
+		}
+	],
+	"methods": []
+}
