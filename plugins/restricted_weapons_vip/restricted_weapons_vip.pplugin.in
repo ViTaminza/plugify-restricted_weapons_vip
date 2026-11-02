@@ -11,21 +11,12 @@
 	"language": "cpp",
 	"dependencies": [
 		{
-			"name": "s2sdk",
-			"constraints": ">=2.18.2"
-		},
-		{
 			"name": "vip",
 			"constraints": ">=1.0.0"
 		},
 		{
 			"name": "RestrictedWeapons",
 			"constraints": ">=1.0.0"
-		},
-		{
-			"name": "hudmenu",
-			"constraints": ">=1.0.0",
-			"optional": true
 		}
 	],
 	"methods": []

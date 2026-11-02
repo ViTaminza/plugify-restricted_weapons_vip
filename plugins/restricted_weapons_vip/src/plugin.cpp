@@ -28,9 +28,11 @@
 //     missing);
 //   * no config and no phrases of its own: the feature value lives in the vip core's groups.ini
 //     (menu label in vip.phrases.txt), the restriction limits in the RestrictedWeapons.ini of
-//     the core.
-
-#include <pisex/pisex.hpp>
+//     the core;
+//   * self-contained (docs/PLUGIN_STANDARD.md §7): no pisexcompat and no s2sdk calls at all.
+//     The module only uses the two consumer wrappers (rw_api.hpp / vip_api.hpp) plus the
+//     plugify plugin API, so the .so carries just the __RestrictedWeapons_* / __vip_* binding
+//     globals of the two cores it declares as dependencies.
 
 #include <plg/plugin.hpp>
 #include <plugin_export.h>
@@ -38,7 +40,6 @@
 #include <rw_api.hpp>
 #include <vip_api.hpp>
 
-#include <chrono>
 #include <exception>
 #include <string>
 #include <string_view>
@@ -78,16 +79,7 @@ bool OnWeaponRestricted(int iSlot, const char* szWeapon) {
 	// The wrapper answers "" when the vip plugin is not loaded (the original returned early on
 	// the null interface).
 	const char* szAllowed = g_pVIPApi->VIP_GetClientFeatureString(iSlot, kFeature);
-	const bool bAllowed = restricted_weapons_vip::IsWeaponAllowed(szAllowed, szWeapon);
-	// TEMPORARY diagnostics (capped): what the VIP module saw for this buy.
-	static int s_diagBudget = 40;
-	if (s_diagBudget > 0) {
-		--s_diagBudget;
-		Log("[vip-diag] slot " + std::to_string(iSlot) + " " + szWeapon + " feature='" +
-				(szAllowed != nullptr ? szAllowed : "") + "' allowed=" + (bAllowed ? "1" : "0"),
-			plg::Severity::Info);
-	}
-	return bAllowed;
+	return restricted_weapons_vip::IsWeaponAllowed(szAllowed, szWeapon);
 }
 
 // OnToggle() of the original (the Item_togglable_callback of VIP_RegisterFeature). The original
@@ -106,10 +98,8 @@ void OnClientLoaded(int /*iSlot*/, bool /*bIsVIP*/) {
 class RestrictedWeaponsVipPlugin final : public plg::Plugin {
 public:
 	plg::PluginResult OnPluginStart() override {
+		// Never Failed: a plugin that fails OnPluginStart stops every Plugify plugin.
 		try {
-			// Never Failed: a plugin that fails OnPluginStart stops every Plugify plugin.
-			pisex::Init("restricted_weapons_vip");
-
 			// AllPluginsLoaded() of the original, in its order. Both cores are declared
 			// dependencies, so they are loaded before this plugin.
 			g_pRWApi->HookOnWeaponRestricted(OnWeaponRestricted);
@@ -128,14 +118,8 @@ public:
 		return {};
 	}
 
-	plg::PluginResult OnPluginUpdate(std::chrono::milliseconds) override {
-		try {
-			pisex::Poll();
-		} catch (...) {
-			// the compat layer never lets a poll failure escape; nothing else to do here
-		}
-		return {};
-	}
+	// No OnPluginUpdate: the module has no per-tick work (it only answers calls coming from the
+	// two cores), so the plugify module reports hasUpdate = false and never calls back.
 
 	plg::PluginResult OnPluginEnd() override {
 		try {
@@ -149,7 +133,6 @@ public:
 			// like the original's - the vip core exposes no feature unregister.
 			g_pVIPApi->VIP_RegisterFeature(kFeature, VIP_BOOL, TOGGLABLE, nullptr, nullptr);
 			g_pVIPApi->VIP_OnClientLoadedUnregister();
-			pisex::Shutdown();
 		} catch (...) {
 			// nothing left to do at unload
 		}

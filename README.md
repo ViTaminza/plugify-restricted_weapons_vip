@@ -4,14 +4,16 @@ VIP module of the RestrictedWeapons core (port of the Pisex module '[Restricted 
 
 Plugify port (fork) of **[Restricted Weapons] VIP (VIP_Module)** by Pisex (Metamod (C++)).
 Original: https://github.com/Pisex/cs2-restricted_weapons
-The code was rewritten for Plugify / s2sdk; behaviour follows the original.
+The code was rewritten for Plugify / s2sdk.
 
 ## Requirements
 - [Plugify](https://github.com/untrustedmodders/plugify) with [s2sdk](https://github.com/untrustedmodders/plugify-plugin-s2sdk)
-- Plugify dependencies: s2sdk, vip, RestrictedWeapons, hudmenu (optional)
+- Plugin version: 1.1.0
+- Plugify dependencies: vip (>=1.0.0), RestrictedWeapons (>=1.0.0)
+- Self-contained s2sdk integration: uses s2sdk directly, without the pisexcompat library.
 
 ## Installation
-Download `restricted_weapons_vip-1.0.1.zip` from Releases and extract it into `game/csgo/`.
+Download `restricted_weapons_vip-1.1.0.zip` from Releases and extract it into `game/csgo/`.
 
 ## Building
 Requires Docker. `./build.sh` builds in the Steam Runtime 3 (sniper) SDK image; the package
